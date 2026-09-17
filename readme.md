@@ -48,7 +48,7 @@ Doplňte do níže uvedené tabulky význam zkratek, základní princip a typick
 | **MPU**                  |                                     | Samostatný procesor vyžadující externí RAM a úložiště, často běží plnohodnotný OS (Linux) |                                   |                                            |
 | **Embedded**             |                                     |                                                                                           | Embedded PLC, embedded PC         | Bílá technika, bankomaty, plynové kotle... |
 | **PLC**                  |                                     | Průmyslový automat pro cyklické řízení procesů, vysoká odolnost, modulární/kompaktní      |                                   |                                            |
-| **iPC**                  |                                     |                                                                                           |                                   |                                            |
+| **iPC**                  |                                     | Výpočetní systém s architekturou klasického PC (x86/x64), ale v mechanicky odolném provedení pro drsné průmyslové prostředí                                                                                          |                                   |                                            |
 | **Programovatelné relé** |                                     | Zjednodušené malé PLC pro méně náročné úlohy (nahrazuje časovače a relé)                  | např. Siemens LOGO!, Eaton easyE4 |                                            |
 
 > :key: **Vysvětlení pojmů a odborné zdroje:**
