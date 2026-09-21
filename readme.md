@@ -208,33 +208,68 @@ Jste v roli projektanta automatizace. Zákazník poptává zhotovení řízení 
 
 1. **Sestavte tabulku I/O bilance** a spočtěte celkový počet signálů. Připočtěte rezervu min. 20 % pro budoucí rozšíření:
 
+# Technický návrh: Řízení obecní přečerpávací stanice odpadních vod
+
+---
+
+## 1. Tabulka I/O bilance s rezervou
+
+*Při výpočtu je základní požadavek aplikace zaokrouhlen směrem nahoru na celé jednotky (signály) po připočtení **20% rezervy**.*
+
+# Technický návrh: Řízení obecní přečerpávací stanice odpadních vod
+
+---
+
+## 1. Tabulka I/O bilance s rezervou
+
+*Při výpočtu je základní požadavek aplikace zaokrouhlen směrem nahoru na celé jednotky (signály) po připočtení **20% rezervy**.*
+
 | Typ signálu | Požadavek aplikace (kusy) | Popis signálů v aplikaci | Počet po započtení rezervy (+20 %) |
-| :--- | :--- | :--- | :--- |
-| **Digitální vstup (DI)** | `...` | `...` | `...` |
-| **Digitální výstup (DO) – reléový** | `...` | `...` | `...` |
-| **Digitální výstup (DO) – tranzistorový** | `...` | `...` | `...` |
-| **Analogový vstup (AI)** | `...` | `...` | `...` |
-| **Analogový výstup (AO)** | `...` | `...` | `...` |
+| :--- | :---: | :--- | :---: |
+| **Digitální vstup (DI)** | 4 | 3× plovákový spínač (suchoběh, zapínací hladina, přepad), 1× poruchový kontakt ochrany přehřátí motoru. | **5** *(4 × 1,2 = 4,8)* |
+| **Digitální výstup (DO) – reléový** | 2 | 2× cívka stykače pro spouštění motorů hlavního a záložního čerpadla (230 V AC / 0,5 A). | **3** *(2 × 1,2 = 2,4)* |
+| **Digitální výstup (DO) – tranzistorový** | 1 | 1× opticko-akustický výstražný maják (24 V DC / 0,3 A). | **2** *(1 × 1,2 = 1,2)* |
+| **Analogový vstup (AI)** | 1 | 1× hydrostatická ponorná sonda výšky hladiny v jímce (4–20 mA). | **2** *(1 × 1,2 = 1,2)* |
+| **Analogový výstup (AO)** | 1 | 1× řízení otáček frekvenčního měniče hlavního čerpadla (0–10 V). | **2** *(1 × 1,2 = 1,2)* |
+| **CELKEM** | **9** | | **14** |
 
-2. **Výběr konkrétního hardwaru z katalogu výrobce:**
-   - Navrhněte konkrétní přístroj z praxe (např. *Siemens LOGO! 24RCE + rozšiřující moduly*, *Siemens S7-1200 CPU 1212C/1214C DC/DC/RLY*, *Schneider Modicon M221*, *Eaton easyE4-UC-12RC1*, *WAGO 750*, případně průmyslový IoT kontrolér typu *UniPi Neuron*).
-   - Uveďte:
-     - Výrobce a přesný model CPU: `...`
-     - Objednací kód (Part Number / Order Code): `...`
-     - Rozšiřující moduly (pokud jsou nutné pro AI 4–20 mA nebo AO 0–10 V): `...`
-     - Napájecí napětí zvolené jednotky: `...`
-     - Jak je vyřešeno odesílání dat na dispečink: `...`
-     - Odkaz na technický list (datasheet): `...`
-     - Odkazy na další použité zdroje: `...`
+---
 
-3. **Technické ověření z datasheetu:**
-   - Zvládá zvolená jednotka garantovaný provoz při -20 °C? Doložte údaj z datasheetu: `...`
-   - Jakým způsobem spínáte cívku stykače 230 V AC (reléový výstup jednotky přímo, nebo přes pomocné mezilehlé relé)? Zdůvodněte: `...`
+## 2. Výběr konkrétního hardwaru z katalogu výrobce
 
-4. **Krytí rozváděče:**
-   - Jaké minimální krytí **IP skříně** zvolíte? Jak v rozváděči zajistíte provoz v mrazech -20 °C a v letních vedrech?
-     - Zvolené krytí rozváděče: `...`
-     - Teplotní management skříně: `...`
+Pro zajištění vysoké spolehlivosti a splnění průmyslových standardů byla zvolena modulární platforma **Siemens SIMATIC S7-1200**.
+
+* **Výrobce a přesný model CPU:** Siemens SIMATIC S7-1200, CPU 1214C DC/DC/DC
+* **Objednací kód (Part Number):** [6ES7214-1AE40-0XB0](https://siemens.com)
+* **Rozšiřující moduly (pro splnění I/O a rezervy):**
+  * **1× Signálová deska analogového výstupu:** SB 1232, 1 AO (0–10 V / 4–20 mA) – instaluje se přímo do čelního slotu CPU, šetří místo na DIN liště. Objednací kód: [6ES7232-4HA30-0XB0](https://siemens.com).
+  * *Poznámka k integraci:* Integrované CPU 1214C obsahuje 14 DI, 10 DO (tranzistorových) and 2 AI (0–10 V). Ponorná sonda (4–20 mA) se připojí na vestavěný AI přes přesný bočníkový odpor 500 Ω (převod na 2–10 V v programu), což eliminuje nutnost drahého AI rozšiřujícího modulu. Pro reléové výstupy využijeme tranzistorové DO k buzení externích vazebních relé (viz bod 3).
+* **Napájecí napětí zvolené jednotky:** 24 V DC (přípustný rozsah 20,4 až 28,8 V DC)
+* **Jak je vyřešeno odesílání dat na dispečink:** CPU disponuje integrovaným portem RJ45 s podporou **Profinet / Modbus TCP**. Do rozváděče bude osazen průmyslový LTE router (např. *Teltonika RUT241*), který bude s PLC komunikovat přes Modbus TCP a data bezpečně šifrovaným VPN tunelem (IPsec/OpenVPN) přenášet na dispečink vodáren, případně odesílat SMS alarmy.
+* **Odkaz na technický list (datasheet):** [Siemens S7-1200 CPU 1214C Datasheet](https://siemens.com)
+* **Odkazy na další použité zdroje:** [Siemens Industry Mall](https://siemens.com) / [Teltonika Networks](https://teltonika-networks.com)
+
+---
+
+## 3. Technické ověření z datasheetu
+
+* **Zvládá zvolená jednotka garantovaný provoz při -20 °C? Doložte údaj z datasheetu:**
+  > **Ano.** Podle oficiálního technického listu výrobce Siemens je okolní provozní teplota pro rodinu S7-1200 (pro model 6ES7214-1AE40-0XB0) při horizontální montáži garantována v rozsahu **-20 °C až +60 °C**.
+* **Jakým způsobem spínáte cívku stykače 230 V AC (reléový výstup jednotky přímo, nebo přes pomocné mezilehlé relé)? Zdůvodněte:**
+  > Cívky spínáme **přes pomocná mezilehlé (vazební) relé** (např. *Finder řady 38* s paticí na DIN lištu, šířka 6.2 mm). 
+  > 
+  > **Zdůvodnění:** Cívka výkonového stykače (0,5 A) vykazuje při rozepnutí vysokou indukční špičku. Přímé spínání interními relé v PLC by rapidně snížilo životnost kontaktů a v případě jejich spečení by byla nutná výměna celého drahého procesoru. Použití úzkých vazebních relé galvanicky odděluje citlivou elektroniku PLC od silové části 230 V AC, dramaticky usnadňuje servis (výměna relé v patici trvá 10 sekund a stojí cca 200 Kč) a umožňuje plně využít spolehlivější tranzistorové DC výstupy přímo na základní desce PLC.
+
+---
+
+## 4. Krytí a teplotní management rozváděče
+
+* **Zvolené krytí rozváděče:** 
+  **IP66** v provedení z nerezové oceli nebo UV stabilního sklolaminátu (např. průmyslové skříně *Rittal řady AX*). Vzhledem k umístění na nekrytém venkovním terénu musí skříň stoprocentně odolat intenzivně stříkající vodě (přívalový déšť, bouřky) a jemnému prachu ze všech směrů. Rozváděč bude navíc vybaven vrchní ochrannou stříškou proti dešti a přímému slunci.
+* **Teplotní management skříně:**
+  * **Provoz v mrazech (-20 °C):** Do spodní části rozváděče bude instalováno **odporové topné těleso s integrovaným termostatem** (např. *STEGO* o výkonu 50W–100W) nastaveným na spínání při poklesu pod +5 °C. To zajistí, že teplota uvnitř neklesne k mezním hodnotám PLC a zároveň eliminuje kondenzaci vzdušné vlhkosti, která by mohla způsobit zkrat.
+  * **Provoz v letních vedrech (+45 °C):** Jelikož je skříň na přímém slunci, vnitřní teplota by bez chlazení snadno překročila kritických +60 °C. Rozváděč bude mít **dvojitou stěnu (pasivní stínění)**, reflexní světle šedý lak (RAL 7035) a bude osazen **ventilačními mřížkami s nuceným oběhem (ventilátor + filtr)** ovládanými termostatem nastaveným na +35 °C. Výdechové mřížky budou osazeny venkovními kryty proti dešti (tzv. *Schrankshub* se zachováním krytí IP55/IP56).
+
 
 > **Kritéria hodnocení úlohy 4 (bodování a známka):**
 > - :star: **Správnost I/O bilance a dimenzování (30 %):** Správný součet všech signálů, korektní rozlišení reléových vs. tranzistorových výstupů a správné započtení rezervy min. 20 %.
