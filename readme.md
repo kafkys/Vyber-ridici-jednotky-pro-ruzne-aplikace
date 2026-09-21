@@ -367,28 +367,16 @@ Představte si, že management firmy rozhoduje mezi dvěma variantami řízení 
 #### Váš úkol:
 1. Srovnejte obě varianty v níže uvedené tabulce a uveďte předpokládaná skrytá rizika a náklady v horizontu 10–15 let:
 
+# 6. Rozšiřující inženýrská výzva: TCO a životní cyklus v automatizaci
+
+---
+
+## 1. Srovnání variant v horizontu 10–15 let
+
 | Aspekt životního cyklu | Varianta 1 (Custom Embedded MCU) | Varianta 2 (Průmyslové PLC) |
 | :--- | :--- | :--- |
-| **Dostupnost náhradních dílů za 10 let** | `...` | `...` |
-| **Servisovatelnost podnikovým elektrikářem** | `...` | `...` |
-| **Doba odstávky linky při poruše CPU** | `...` | `...` |
-| **Cena vývojových nástrojů a licencí IDE** | `...` | `...` |
-| **Závěrečné doporučení (kterou variantu vybrat a proč)** | `...` | `...` |
-
-> :key: **Vysvětlení pojmů a odborné zdroje:**
-> - **CAPEX (Capital Expenditure)**: Zjednodušeně jde o jednorázové kapitálové výdaje na pořízení samotného zařízení (hardware, licence).
-> - **OPEX (Operating Expense)**: Zjednodušeně jde o průběžné provozní náklady nutné k udržení zařízení v chodu (energie, servis, podpora).
-> - **TCO (Total Cost of Ownership):** Finanční odhad celkových přímých i nepřímých nákladů spojených s pořízením, provozem, servisem, údržbou a likvidací produktu po celou dobu jeho životnosti. Zjednodušeně je to součet CAPEX + OPEX za celou dobu životnosti zařízení. 
-> 	Total cost of ownership. *Wikipedia: The Free Encyclopedia* [online]. St. Petersburg (Florida): Wikimedia Foundation, 2024, 2024-08-14 [cit. 2026-09-17]. Dostupné z: https://en.wikipedia.org/wiki/Total_cost_of_ownership
-> - **Vendor Lock-in:** Stav závislosti zákazníka na konkrétním dodavateli produktů nebo služeb, kdy je přechod k jiné platformě spojen s neúměrně vysokými finančními i časovými náklady.
-
-<details>
-<summary> :bulb: Tip k úvaze o TCO: </summary>
-<p>Když za 7 let odejde custom deska z Varianty 1 a původní vývojář již ve firmě nepracuje a čip se nevyrábí, musí firma vyvinout celou řídicí elektroniku znovu od nuly. Hodina odstávky automobilové linky přitom stojí desítky až stovky tisíc korun.</p>
-</details>
-
-:star2: **Bonusová otázka k úloze 6:**
-Co znamená pojem **MTBF (Mean Time Between Failures)** v datasheetech průmyslových řídicích jednotek a jaký vliv má okolní teplota v rozváděči na tuto hodnotu (tzv. Arrheniovo pravidlo)?
-
-*Vaše odpověď:*
-`...`
+| **Dostupnost náhradních dílů za 10 let** | **Extrémně kritická.** Elektronické komponenty podléhají rychlému morálnímu zastarání (End-of-Life). Při výpadku jednoho čipu je nutný kompletní redesign celého plošného spoje (PCB) a nová certifikace. | **Vysoká garance.** Renomovaní výrobci (Siemens, Rockwell) garantují dostupnost identických náhradních dílů po dobu 10 let od ukončení výroby a následnou zpětnou kompatibilitu nástupců. |
+| **Servisovatelnost podnikovým elektrikářem** | **Nemožná.** Běžný údržbář nemá vybavení ani znalosti pro diagnostiku embedded desek na úrovni mikročipů. Bez chybějící dokumentace a zdrojového kódu je systém pro údržbu „černou skříňkou“. | **Standardní.** Běžný provozní elektrikář je vyškolen na práci s PLC. Dokáže vyměnit vadný modul na DIN liště, připojit se k jednotce, přečíst chybovou diagnostiku a nahrát zálohu programu. |
+| **Doba odstávky linky při poruše CPU** | **Dny až týdny.** Pokud nejsou skladem specifické osazené desky, linka stojí. Oprava vyžaduje zásah externího specialisty, zdlouhavé hledání chyb v hardwaru nebo kompletní přepis firmwaru. Výpadky generují obrovské ztráty. | **Minuty až hodiny.** Údržba vyjme vadné PLC z DIN lišty, nacvakne nový kus ze skladu, nahraje ze serveru zálohovaný program (nebo přehraje SD kartu) a linka okamžitě pokračuje v produkci. |
+| **Cena vývojových nástrojů a licencí IDE** | **Nízká / Zdarma.** Vývojová prostředí pro MCU (např. STM32CubeIDE, VS Code, Arduino IDE) jsou většinou open-source bez licenčních poplatků. | **Vysoká.** Profesionální inženýrské softwary (např. TIA Portal, Studio 5000) vyžadují nákup drahých vývojových licencí a pravidelné poplatky za aktualizace (Software Update Service). |
+| **Závěrečné doporučení (kterou variantu vybrat a proč)** | **Nedoporučuje se pro sériovou výrobu.** Nízké pořizovací náklady (CAPEX) jsou vykoupeny extrémním rizikem obrovských provozních nákladů (OPEX) při sebemenší poruše a závislostí na jednom externím vývojáři. | **Jednoznačná volba pro průmysl.** Vyšší počáteční investice se mnohonásobně vrátí v minimální době odstávek, snadné údržbě, dlouhodobé stabilitě a plné zastupitelnosti servisních techniků. |
