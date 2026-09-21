@@ -311,18 +311,25 @@ Jako vedoucí inženýr jste převzal projekt po nezkušeném brigádníkovi, kt
 1. **Zpracujte písemný audit rizik (minimálně 4 fatální technická selhání):**
    Vyplňte protokol o zjištěných vadách a popište konkrétní fyzikální mechanismus, jak daná chyba způsobí havárii stroje či ohrožení lidského života:
 
+# 1. Písemný audit rizik (Protokol o zjištěných vadách)
+
 | Oblast auditu | Zjištěná vada v amatérském návrhu | Fyzikální mechanismus selhání (proč to selže) | Následek pro stroj nebo obsluhu |
 | :--- | :--- | :--- | :--- |
-| **Elektromagnetická kompatibilita (EMC)** | `...` | Napěťové špičky z indukční zátěže hydraulických ventilů způsobí restart MCU... | `...` |
-| **Mechanická a teplotní odolnost** | PLA plast a montáž na těleso lisu | `...` | `...` |
-| **Konektivita a propojení vodičů** | DuPont propojovací kabely bez aretace | `...` | `...` |
-| **Funkční bezpečnost (Safety)** | Nouzový stop řešený softwarově v čipu | `...` | `...` |
+| **Elektromagnetická kompatibilita (EMC)** | Absence galv. oddělení, odrušovacích diod/RC členů u indukční zátěže, chybějící stínění. | Napěťové špičky z indukční zátěže hydraulických ventilů způsobí restart MCU nebo poškození tranzistorů. | Neočekávané chování lisu, ztráta kontroly nad polohou pístu, riziko nekontrolovaného sepnutí lisu a těžkého úrazu obsluhy. |
+| **Mechanická a teplotní odolnost** | PLA plast a montáž na těleso lisu | PLA plast má nízkou teplotu měknutí (cca 60 °C). Vibrace a teplo z tělesa lisu způsobí strukturální degradaci, deformaci krytu a uvolnění komponentů. | Zkrat na kostru stroje při uvolnění desky elektroniky. Fatální selhání řízení za běhu stroje, riziko požáru nebo zásahu proudem. |
+| **Konektivita a propojení vodičů** | DuPont propojovací kabely bez aretace | Kontaktní odpor se vlivem vibrací lisu mění. Dochází k mikrovýpadkům spojení nebo k úplnému vytřesení kabelu z pinů. | Ztráta signálu ze senzorů (např. koncové spínače). Stroji chybí zpětná vazba, pokračuje v pohybu za mechanické limity a zničí se. |
+| **Funkční bezpečnost (Safety)** | Nouzový stop řešený softwarově v čipu | Zaseknutí programu (freeze MCU), chyba v kódu nebo poškození čipu špičkou způsobí ignorování stisku tlačítka E-Stop. | Nemožnost zastavit stroj v případě nouze. Fatální či smrtelné zranění obsluhy (přimáčknutí, amputace končetin). |
 
-2. **Návrh profesionálního nápravného řešení:**
-   - Navrhněte, jakými certifikovanými průmyslovými komponenty tento celek nahradíte při zachování minimálního rozpočtu:
-     - *Náhrada řídicí jednotky:* `...` *(např. certifikované průmyslové programovatelné relé s montáží na DIN lištu a krytím)*
-     - *Náhrada napájecího zdroje:* `...` *(např. stabilizovaný průmyslový zdroj 24 V DC na DIN lištu s ochranou proti přepětí)*
-     - *Způsob zapojení bezpečnostního okruhu (Safety):* Jak musí být podle norem zapojeno tlačítko Emergency Stop (E-Stop)? Smí být spoléháno pouze na software mikrokontroléru? Zdůvodněte: `...`
+---
+
+# 2. Návrh profesionálního nápravného řešení
+
+* **Náhrada řídicí jednotky:** **Siemens LOGO! 24RCE** (případně Eaton easyE4). Jedná se o certifikované průmyslové programovatelné relé s robustním krytím, montáží na DIN lištu, vysokou odolností proti vibracím, teplotám a elektromagnetickému rušení.
+* **Náhrada napájecího zdroje:** **Siemens SITOP PSU100C 24 V / 1,3 A** (případně Mean Well na DIN lištu). Stabilizovaný průmyslový spínaný zdroj určený na DIN lištu s integrovanou ochranou proti přetížení, zkratu a přepětí, zajišťující čisté napájení pro logické obvody.
+* **Způsob zapojení bezpečnostního okruhu (Safety):** 
+  Podle platných norem (**ČSN EN ISO 13849-1**) musí být tlačítko Emergency Stop (E-Stop) zapojeno výhradně **hardwarově**, a to prostřednictvím certifikovaného **bezpečnostního relé** (např. *Sick, Pilz, Schneider Preventa*), které při aktivaci fyzicky a bezpečně odpojí napájení akčních členů (stykačů motorů a ventilů). 
+  
+  **Zdůvodnění:** Nesmí se v žádném případě spoléhat pouze na software mikrokontroléru. Software není deterministicky bezpečný prvek – může selhat z důvodu zacyklení, chyb v registru, poškození paměti nebo hardwarového poškození samotného jádra MCU. Bezpečnostní funkce musí fungovat nezávisle na řídicím systému.
 
 > **Kritéria hodnocení úlohy 5 (bodování a známka):**
 > - :star: **Odborná úroveň identifikace závad (35 %):** Přesná technická terminologie (např. elektromagnetická indukce, absence odrušovacích varistorů, skelný přechod PLA plastu při 60 °C, studené spoje a vyklepání konektorů vibracemi).
